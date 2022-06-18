@@ -1,0 +1,136 @@
+개발환경 설정
+
+공통..
+JDK
+    - 환경변수 설정까지 (내PC - 속성 - 고급 시스템 설정 - 고급 - 환경변수 - 시스템변수 - 새로만들기 - JDK 폴더를 JAVA_HOME 으로 지정)
+    - Path 변수에 %JAVA_HOME%bin; 추가
+tomcat
+    - tomcat x - Binary Distributions - Core - 64bit Windows.zip 다운받아 C\ 에 바로 압축해제
+
+개발도구 버전 설정
+    1. JDK1.8 : 모듈 등 큰 변화가 1.9에 일어났는데, 바꾸긴 해야되는데, Open JDK 사용해야 한다.
+        - 애초에 JAVA 1.8도 보안릴리즈 안된 버전이긴 하다..
+        - 어떤 사람의 요약은, Oracle 지원 기다리지 말고, 본인이 직접 오류수정하고 하라고 한다.
+        - 근데 난 그럴 실력 안되니, 회사에서 정해주는거 써야되는거고, 그러면 1.8에 익숙해져있는게 낫지.
+        - 나중에 연차 쌓이고 개인적으로 Java17 등 개인프로젝트부터 도입해보던가...
+    2. tomcat 9.0 : tomcat 10.x 는 javax 대신 jakarta 사용해야 한다. 이거때문에 Spring 6정도 되야 지원될것임.. 지금의 나는 공부하는 입장이니...
+        그냥 9.0으로 만족한다. 사실 8.5가 Java8같은 느낌이다.
+        - 또, 10은 jakarta 떄문에 JSTL 사용이 안된다.
+        - java EE 8 필요하다.
+    3. Spring 5 : 이건 문제없는듯하다. 공부하다보면 토비스프링 5 나올듯.
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+IntelliJ 의 경우... (참고 : https://velog.io/@ruddms936/IntelliJ%EB%A1%9C-JSP-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%83%9D%EC%84%B1)
+
+1. Java 프로젝트 생성
+2. add Framework Support
+    - JavaEE - Webservice 체크
+    - Version = Apache Axis 선택
+    - set up library later
+3. 최적화
+    - server-config.wsdd 삭제(사용안함)
+    - web.xml 에 wep-app 자식태그들은 전부 없애주기(몇줄 안남는다.)
+4. 우측 상단 add Configuration - Tomcat Server - Local
+    - tomcat 경로 지정
+    - VM option에 -Dfile.encoding=UTF-8 추가. (IntelliJ 내부에서 해준 건 JVM의 인코딩 설정이고, 이건 tomcat의 인코딩설정이다.)
+    - On Update 와 On Frame deactivation 를 Update classes and resources 체크 (이걸 체크해줘야 새로고침시 즉시반영된다.)
+    - 여기까지가 tomcat 트리거 설정이다.
+5. deployment(배포) 탭으로 이동 - + Artifact - *.war 로 생성되면 된다.(JSP니깐.) - Artifact는 build file을 의미한다.
+    - war exploded 가 되면 실시간 반영이 가능하다.
+6. java EE 6 jar 라이브러리 추가
+    - 여러 방법이 있겠지만, java파일 하나 생성 후, extends javax.servlet.http.HttpServlet 한 후, Alt + Enter하여 Download 해준다.
+    - 이제 new servlet.Servlet 선택이 가능하다.
+
+---------------------------------------------------------------------------------------------------------------------
+
+eclipse 의 경우...
+
+eclipse EE 버전 설치
+
+1. 웹서버 연동하기
+    - Servers 프로젝트 생성 : File - New - Other - Server - Server - Tomcat vx Server - 서버경로, JRE 설정
+    - 연동 확인 : 하단콘솔 Servers 탭 확인
+
+2. 프로젝트 생성
+    - 프로젝트생성 : File - New - Dynamic Web Project - Target runtime이  tomcat 제대로 되있는지 확인 - jsp작성
+    - 서버 실행 : 하단 Servers 탭 우클릭 - Add and Remove - 프로젝트 Add하여 Tomcat server 하위에 프로젝트 추가 - tomcat 실행
+    - 실행결과 확인 : 프로젝트 선택 후 실행버튼 - Run As - Run on Server
+    - 브라우저 변경 : Window - Web Browser 로 실행. Internal browser는 이클립스 자체 브라우저이다.
+
+3. 배포
+    - 단순한 JSP 파일은 FTP로 불러와 편집해서 저장할 수도 있다.
+    - 복잡한 파일의 경우 배포파일(war) 하나로 만들어서 웹어플리케이션을 업데이트한다.
+    - Export - WAR file - Export source files(java파일을 포함시킴) 체크 - Overwrite existing file 체크 - tomcat\webapps\ROOT
+    - 에 저장 후 압축해제 - tomcat\bin\startup.bat 실행 (톰캣서버를 실행하는 것)
+
+---------------------------------------------------------------------------------------------------------------------
+
+JSP(Java Script Page) 개요
+
+Internet > (web, ftp, email, telnet.....) 그러나, 웹의 비중이 절대적이라 흔히 인터넷=웹 으로 사용한다.
+
+웹서버 : Tomcat, Apache, IIS(Internet Information Server) 등...
+이 중 Tomcat 은 JSP 와 Servlet을 지원한다.
+
+JSP
+    - 서버측 언어
+    - 실행 시 Servlet 으로 변환됨
+    - Servlet 은 Java 안에 Html 넣은 것.
+    - JSP 는 Html 안에 Java를 넣은 것
+    - Servlet 의 모든 기능 사용가능 (Servlet 의 확장이다.)
+        - 내장객체, 미리정의된 태그, 표현식언어, 사용자정의태그
+    -  JDBC, JNDI, EJB 모두 포함 ?????????????????
+    - 코드 수정시 Servlet은 재컴파일이 필요하다.
+    - Servlet은 프레젠테이션과 비즈니스 로직이 붙어있어 관리가 어렵다.
+
+JSP 처리과정
+    - JSP는 Servlet으로 변환되어 저장됨 (container가 담당)
+    - 1. 요청에서 jsp발견
+    - 2. 웹서버 내 컨테이너에 요청 전달
+    - 3. 컨테이너는 JSP를 Servlet으로 변환
+    - 4. 컴파일 후 웹서버에 전달
+    - 5. 응답
+
+
+
+서버 개념 정리
+    - web server
+        - html이나, 오브젝트를 전송
+        - 필요하면 컨테이너 처럼 처리가능한 곳으로 넘겨 처리하기도 함
+        - 웹서버만 사용한다면 정적 반응밖에 못함
+        - Apache, IIS 등
+    - web container
+        - JSP, Servlet을 실행할 수 있는 프로그램
+    - web application server (WAS)
+        - web server + web container
+        - tomcat, WebLogic 등.
+
+JSP 생명주기
+    class생성은 servlet 생성시기와 jsp수정시기를 비교하여 필요시에만 한다.
+    생성된 class에 대하여..
+
+   1. jspInit()
+    - class 생성시 인수가 없는 생성자 사용
+    - 이후 jspInit()으로 초기화함
+    - 일반적으로 한번만 수행됨
+    - 리소스 로딩 / 룩업테이블 생성(미리 계산된 테이블) 등
+
+   2. _jspService()
+    - 요청 및 응답객체 전달 - 누구에게? 웹서버에게? 아니면 직접?
+
+   3. jspDestroy()
+    - Servlet의 destroy()에 해당.
+    - 리소스정리 등.. 필요시 오버라이딩한다.
+
+   Init과 destroy는 오버라이딩 선택(컨테이너가 기본기능 제공)
+   _jspService()는 오버라이딩 불가(컨테이너가 추가하기 떄문 ???)
+
+JSP 프로젝트 구조
+    WebContent : web application root folder. 일반적이로 이 폴더에 jsp를 작성하고(하위 폴더 만들어도 된다.)
+                브라우저를 통해 직접 접근 가능(/PrjName/index.jsp)
+        - WEB-INF : 보안을 위해 jsp나 정적 리소스들을 이 폴더에 배치할 수도 있다.
+        - *.jsp...
+        - 정적 리소스들( html, css, 이미지 등.. )
+
